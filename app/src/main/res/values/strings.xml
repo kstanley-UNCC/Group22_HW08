@@ -14,4 +14,7 @@
     <string name="sign_up_label">Sign Up</string>
     <string name="new_chat_label">New Chat</string>
     <string name="my_chats_label">My Chats</string>
+    <string name="enter_chat_message_hint">Enter Chat Message</string>
+    <string name="select_user_text">Select User to Start Chat</string>
+    <string name="no_user_selected">No User Selected !!</string>
 </resources>
