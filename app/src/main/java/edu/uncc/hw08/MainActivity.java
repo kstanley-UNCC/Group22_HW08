@@ -6,6 +6,7 @@ package edu.uncc.hw08;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
 
     @Override
     public void logout() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, new LoginFragment())
-                .commit();
+        Intent intent = new Intent(this, AuthActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

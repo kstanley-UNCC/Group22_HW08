@@ -29,9 +29,7 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                     .add(R.id.rootView, new LoginFragment())
                     .commit();
         } else {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            gotoMyChats();
         }
     }
 
@@ -51,7 +49,7 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
 
             this.firebaseUser = task.getResult().getUser();
 
-            gotoMyChats(this.firebaseUser);
+            gotoMyChats();
         });
     }
 
@@ -89,7 +87,7 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
 
                 this.firebaseUser = user;
 
-                gotoMyChats(user);
+                gotoMyChats();
             });
         });
     }
@@ -108,9 +106,9 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 .commit();
     }
 
-    public void gotoMyChats(FirebaseUser firebaseUser) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, MyChatsFragment.newInstance(firebaseUser))
-                .commit();
+    public void gotoMyChats() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

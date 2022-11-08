@@ -81,7 +81,6 @@ public class MyChatsFragment extends Fragment {
         binding.buttonNewChat.setOnClickListener(v -> mListener.goCreateChat());
 
         String userId = firebaseUser.getUid();
-        Log.d("demo", "onClick: User " + userId);
 
         Query query = firebaseFirestore
                 .collection("Users")
