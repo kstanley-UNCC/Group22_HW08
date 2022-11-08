@@ -24,6 +24,7 @@ import edu.uncc.hw08.databinding.FragmentSignUpBinding;
 
 public class SignUpFragment extends Fragment {
 
+    FragmentSignUpBinding binding;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public SignUpFragment() {
@@ -35,14 +36,11 @@ public class SignUpFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    FragmentSignUpBinding binding;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSignUpBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -62,25 +60,7 @@ public class SignUpFragment extends Fragment {
             } else if (name.isEmpty()) {
                 Toast.makeText(getContext(), "Name is required", Toast.LENGTH_SHORT).show();
             } else {
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-
-                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                .setDisplayName(name)
-                                .build();
-
-                        user.updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
-                            if (task1.isSuccessful()) {
-                                mListener.gotoMyChat();
-                            } else {
-                                Toast.makeText(getContext(), "Error in creating user", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } else {
-                        Toast.makeText(getContext(), "Sign up failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                mListener.createAccount(name, email, password);
             }
         });
 
@@ -96,7 +76,7 @@ public class SignUpFragment extends Fragment {
     }
 
     interface SignUpListener {
-        void gotoMyChat();
+        void createAccount(String name, String email, String password);
         void gotoLogin();
     }
 }

@@ -22,6 +22,8 @@ import edu.uncc.hw08.databinding.FragmentLoginBinding;
 
 public class LoginFragment extends Fragment {
 
+    FragmentLoginBinding binding;
+
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -31,15 +33,11 @@ public class LoginFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    FragmentLoginBinding binding;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
-
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -54,13 +52,7 @@ public class LoginFragment extends Fragment {
             } else if(password.isEmpty()){
                 Toast.makeText(getContext(), "Password is required", Toast.LENGTH_SHORT).show();
             } else {
-                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), task -> {
-                    if(task.isSuccessful()){
-                        mListener.gotoMyChat();
-                    } else {
-                        Toast.makeText(getActivity(), "Login Failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                mListener.authenticate(email, password);
             }
         });
         binding.buttonCreateNewAccount.setOnClickListener(v -> mListener.gotoSignUp());
@@ -77,7 +69,7 @@ public class LoginFragment extends Fragment {
     }
 
     interface LoginListener {
-        void gotoMyChat();
+        void authenticate(String username, String password);
         void gotoSignUp();
     }
 }

@@ -4,6 +4,7 @@
 
 package edu.uncc.hw08;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -11,12 +12,11 @@ import android.os.Bundle;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class AuthActivity extends AppCompatActivity implements LoginFragment.LoginListener, SignUpFragment.SignUpListener {
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     FirebaseUser firebaseUser;
 
     @Override
@@ -36,10 +36,69 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     @Override
-    public void gotoMyChat() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
+    public void authenticate(String username, String password) {
+        mAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Exception exception = task.getException();
+                assert exception != null;
+                new AlertDialog.Builder(AuthActivity.this)
+                        .setTitle("An Error Occurred")
+                        .setMessage(exception.getLocalizedMessage())
+                        .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                        .show();
+
+                return;
+            }
+
+            this.firebaseUser = task.getResult().getUser();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.rootView, MyChatsFragment.newInstance(this.firebaseUser))
+                    .commit();
+        });
+    }
+
+    @Override
+    public void createAccount(String name, String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(createTask -> {
+            if (!createTask.isSuccessful()) {
+                Exception exception = createTask.getException();
+                assert exception != null;
+                new AlertDialog.Builder(AuthActivity.this)
+                        .setTitle("An Error Occurred")
+                        .setMessage(exception.getLocalizedMessage())
+                        .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                        .show();
+
+                return;
+            }
+
+            UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(name)
+                    .build();
+
+            FirebaseUser user = createTask.getResult().getUser();
+            assert user != null;
+            user.updateProfile(request).addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    Exception exception = task.getException();
+                    assert exception != null;
+                    new AlertDialog.Builder(AuthActivity.this)
+                            .setTitle("An Error Occurred")
+                            .setMessage(exception.getLocalizedMessage())
+                            .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                            .show();
+
+                    return;
+                }
+
+                this.firebaseUser = user;
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.rootView, MyChatsFragment.newInstance(this.firebaseUser))
+                        .commit();
+            });
+        });
     }
 
     @Override
