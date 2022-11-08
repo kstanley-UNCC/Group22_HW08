@@ -16,9 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -26,6 +23,9 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import edu.uncc.hw08.databinding.FragmentSignUpBinding;
 
 public class SignUpFragment extends Fragment {
+
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
     public SignUpFragment() {
         // Required empty public constructor
     }
@@ -37,73 +37,54 @@ public class SignUpFragment extends Fragment {
 
     FragmentSignUpBinding binding;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSignUpBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.buttonCancel.setOnClickListener(v -> mListener.gotoLogin());
 
-        binding.buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.gotoLogin();
-            }
-        });
+        binding.buttonSignup.setOnClickListener(v -> {
+            String email = binding.editTextEmail.getText().toString();
+            String password = binding.editTextPassword.getText().toString();
+            String name = binding.editTextName.getText().toString();
 
+            if (email.isEmpty()) {
+                Toast.makeText(getContext(), "Email is required", Toast.LENGTH_SHORT).show();
+            } else if (password.isEmpty()) {
+                Toast.makeText(getContext(), "Password is required", Toast.LENGTH_SHORT).show();
+            } else if (name.isEmpty()) {
+                Toast.makeText(getContext(), "Name is required", Toast.LENGTH_SHORT).show();
+            } else {
+                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
 
-        binding.buttonSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = binding.editTextEmail.getText().toString();
-                String password = binding.editTextPassword.getText().toString();
-                String name = binding.editTextName.getText().toString();
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(name)
+                                .build();
 
-                if (email.isEmpty()) {
-                    Toast.makeText(getContext(), "Email is required", Toast.LENGTH_SHORT).show();
-                } else if (password.isEmpty()) {
-                    Toast.makeText(getContext(), "Password is required", Toast.LENGTH_SHORT).show();
-                } else if (name.isEmpty()) {
-                    Toast.makeText(getContext(), "Name is required", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(name)
-                                        .build();
-                                user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            mListener.gotoMyChat();
-                                        } else {
-                                            Toast.makeText(getContext(), "Error in creating user", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
+                        user.updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                mListener.gotoMyChat();
                             } else {
-                                Toast.makeText(getContext(), "Sign up failed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Error in creating user", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                    });
-
-                }
+                        });
+                    } else {
+                        Toast.makeText(getContext(), "Sign up failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
-        getActivity().setTitle("Sign Up");
-
+        getActivity().setTitle(R.string.sign_up_label);
     }
 
     SignUpListener mListener;
