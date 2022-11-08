@@ -11,7 +11,7 @@
         android:id="@+id/buttonLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Logout"
+        android:text="@string/logout_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -19,12 +19,12 @@
         android:id="@+id/buttonNewChat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Chat"
+        android:text="@string/new_chat_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/listViewChats"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"

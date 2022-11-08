@@ -55,6 +55,4 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 .replace(R.id.rootView, new SignUpFragment())
                 .commit();
     }
-
-
 }

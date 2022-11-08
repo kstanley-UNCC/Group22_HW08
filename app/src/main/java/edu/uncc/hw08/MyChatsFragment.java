@@ -4,48 +4,50 @@
 
 package edu.uncc.hw08;
 
+import android.content.Context;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MyChatsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+
+import org.checkerframework.checker.units.qual.C;
+
+import edu.uncc.hw08.databinding.FragmentMyChatsBinding;
+
 public class MyChatsFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    FragmentMyChatsBinding binding;
+    ArrayAdapter<Chat> adapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_USER = "user";
+
+    private FirebaseUser firebaseUser;
+    private final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     public MyChatsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MyChatsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MyChatsFragment newInstance(String param1, String param2) {
+    public static MyChatsFragment newInstance(FirebaseUser firebaseUser) {
         MyChatsFragment fragment = new MyChatsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_USER, firebaseUser);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,15 +56,57 @@ public class MyChatsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            firebaseUser = getArguments().getParcelable(ARG_USER);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_chats, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentMyChatsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        binding.buttonLogout.setOnClickListener(v -> {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            auth.signOut();
+            mListener.logout();
+        });
+
+        binding.buttonNewChat.setOnClickListener(v -> mListener.goCreateChat());
+
+        Query query = firebaseFirestore
+                .collection("Users")
+                .document(firebaseUser.getUid())
+                .collection("Chats")
+                .orderBy("created_at", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<Chat> options = new FirestoreRecyclerOptions.Builder<Chat>()
+                .setQuery(query, Chat.class)
+                .build();
+
+        adapter = new ArrayAdapter<Chat>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
+        binding.listViewChats.setAdapter(adapter);
+
+        binding.listViewChats.setOnItemClickListener((adapterView, view1, position, l) -> mListener.goToChat(adapter.getItem(position)));
+
+        requireActivity().setTitle(R.string.my_chats_label);
+    }
+
+    MyChatsFragmentListener mListener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mListener = (MyChatsFragmentListener) context;
+    }
+
+    interface MyChatsFragmentListener {
+        void goToChat(Chat chat);
+        void goCreateChat();
+        void logout();
     }
 }
