@@ -46,15 +46,12 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                         .setMessage(exception.getLocalizedMessage())
                         .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
                         .show();
-
                 return;
             }
 
             this.firebaseUser = task.getResult().getUser();
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.rootView, MyChatsFragment.newInstance(this.firebaseUser))
-                    .commit();
+            gotoLogin();
         });
     }
 
@@ -69,7 +66,6 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                         .setMessage(exception.getLocalizedMessage())
                         .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
                         .show();
-
                 return;
             }
 
@@ -88,15 +84,12 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                             .setMessage(exception.getLocalizedMessage())
                             .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
                             .show();
-
                     return;
                 }
 
                 this.firebaseUser = user;
 
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.rootView, MyChatsFragment.newInstance(this.firebaseUser))
-                        .commit();
+                gotoMyChats(user);
             });
         });
     }
@@ -114,4 +107,12 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 .replace(R.id.rootView, new SignUpFragment())
                 .commit();
     }
+
+    public void gotoMyChats(FirebaseUser firebaseUser) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, MyChatsFragment.newInstance(firebaseUser))
+                .commit();
+    }
+
+
 }
