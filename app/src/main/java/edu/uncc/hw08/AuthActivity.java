@@ -10,9 +10,15 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AuthActivity extends AppCompatActivity implements LoginFragment.LoginListener, SignUpFragment.SignUpListener {
+
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    FirebaseUser firebaseUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,4 +55,6 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 .replace(R.id.rootView, new SignUpFragment())
                 .commit();
     }
+
+
 }

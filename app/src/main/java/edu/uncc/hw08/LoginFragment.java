@@ -21,10 +21,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import edu.uncc.hw08.databinding.FragmentLoginBinding;
 
 public class LoginFragment extends Fragment {
+
     public LoginFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,8 +34,7 @@ public class LoginFragment extends Fragment {
     FragmentLoginBinding binding;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -46,38 +45,31 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = binding.editTextEmail.getText().toString();
-                String password = binding.editTextPassword.getText().toString();
+        binding.buttonLogin.setOnClickListener(v -> {
+            String email = binding.editTextEmail.getText().toString();
+            String password = binding.editTextPassword.getText().toString();
 
-                if(email.isEmpty()){
-                    Toast.makeText(getContext(), "Email is required", Toast.LENGTH_SHORT).show();
-                } else if(password.isEmpty()){
-                    Toast.makeText(getContext(), "Password is required", Toast.LENGTH_SHORT).show();
-                } else {
-                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), task -> {
-                        if(task.isSuccessful()){
-                            mListener.gotoMyChat();
-                        } else {
-                            Toast.makeText(getActivity(), "Login Failed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+            if(email.isEmpty()){
+                Toast.makeText(getContext(), "Email is required", Toast.LENGTH_SHORT).show();
+            } else if(password.isEmpty()){
+                Toast.makeText(getContext(), "Password is required", Toast.LENGTH_SHORT).show();
+            } else {
+                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), task -> {
+                    if(task.isSuccessful()){
+                        mListener.gotoMyChat();
+                    } else {
+                        Toast.makeText(getActivity(), "Login Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
-        binding.buttonCreateNewAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.gotoSignUp();
-            }
-        });
+        binding.buttonCreateNewAccount.setOnClickListener(v -> mListener.gotoSignUp());
 
-        getActivity().setTitle("Login");
+        getActivity().setTitle(R.string.login_label);
     }
 
     LoginListener mListener;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
