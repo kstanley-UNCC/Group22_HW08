@@ -8,13 +8,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener {
 
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    FirebaseUser firebaseUser;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

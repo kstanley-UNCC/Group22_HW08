@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +35,11 @@ public class MyChatsFragment extends Fragment {
 
     FragmentMyChatsBinding binding;
     ArrayAdapter<Chat> adapter;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
     private static final String ARG_USER = "user";
 
-    private FirebaseUser firebaseUser;
     private final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     public MyChatsFragment() {
@@ -78,9 +80,12 @@ public class MyChatsFragment extends Fragment {
 
         binding.buttonNewChat.setOnClickListener(v -> mListener.goCreateChat());
 
+        String userId = firebaseUser.getUid();
+        Log.d("demo", "onClick: User " + userId);
+
         Query query = firebaseFirestore
                 .collection("Users")
-                .document(firebaseUser.getUid())
+                .document(userId)
                 .collection("Chats")
                 .orderBy("created_at", Query.Direction.DESCENDING);
 
@@ -88,7 +93,7 @@ public class MyChatsFragment extends Fragment {
                 .setQuery(query, Chat.class)
                 .build();
 
-        adapter = new ArrayAdapter<Chat>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
         binding.listViewChats.setAdapter(adapter);
 
         binding.listViewChats.setOnItemClickListener((adapterView, view1, position, l) -> mListener.goToChat(adapter.getItem(position)));

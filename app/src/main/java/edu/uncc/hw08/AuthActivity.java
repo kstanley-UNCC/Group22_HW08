@@ -51,7 +51,7 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
 
             this.firebaseUser = task.getResult().getUser();
 
-            gotoLogin();
+            gotoMyChats(this.firebaseUser);
         });
     }
 
@@ -113,6 +113,4 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 .replace(R.id.rootView, MyChatsFragment.newInstance(firebaseUser))
                 .commit();
     }
-
-
 }
