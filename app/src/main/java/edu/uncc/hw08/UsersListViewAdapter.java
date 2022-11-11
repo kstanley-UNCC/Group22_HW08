@@ -9,7 +9,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 
@@ -18,10 +22,13 @@ public class UsersListViewAdapter extends RecyclerView.Adapter<UsersListViewAdap
     FirebaseFirestore firebaseFirestore;
     LayoutInflater inflater;
     UsersListener listener;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser firebaseUser;
+
 
     public UsersListViewAdapter(Context layout, FirebaseFirestore firebaseFirestore, UsersListener listener) {
         this.inflater = LayoutInflater.from(layout);
-        this.firebaseFirestore = FirebaseFirestore.getInstance();
+        this.firebaseFirestore = firebaseFirestore;
         this.listener = listener;
     }
 
@@ -34,7 +41,7 @@ public class UsersListViewAdapter extends RecyclerView.Adapter<UsersListViewAdap
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-
+        holder.textViewName.setText(firebaseUser.getDisplayName());
     }
 
     @Override
@@ -46,20 +53,22 @@ public class UsersListViewAdapter extends RecyclerView.Adapter<UsersListViewAdap
         TextView textViewName;
         ImageView imageViewOnline;
         UsersListener listener;
+        FirebaseFirestore firebaseFirestore;
+        FirebaseUser firebaseUser;
+
 
         public UserViewHolder(@NonNull View itemView, UsersListener listener) {
             super(itemView);
             this.listener = listener;
 
             textViewName = itemView.findViewById(R.id.textViewName);
-           // if () {
-                imageViewOnline.setVisibility(View.VISIBLE);
-          //  }
-
+            //if () {
+                //imageViewOnline.setVisibility(View.VISIBLE);
+            //}
         }
     }
 
     public interface UsersListener {
-
+        void userClicked(FirebaseUser firebaseUser);
     }
 }

@@ -4,6 +4,7 @@
 
 package edu.uncc.hw08;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,7 +14,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener {
+import org.checkerframework.checker.units.qual.C;
+
+public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener, CreateChatFragment.CreateChatListener {
 
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -38,8 +41,11 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
     }
 
     @Override
-    public void goCreateChat() {
-
+    public void goCreateChat(FirebaseUser firebaseUser) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, CreateChatFragment.newInstance(firebaseUser))
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -47,5 +53,35 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
         Intent intent = new Intent(this, AuthActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void gotoMyChats() {
+        getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void createChat(String chatText, FirebaseUser chosenUser) {
+        Chat chat = new Chat();
+
+        firebaseFirestore
+                .collection("Users")
+                .document(chat.getUser_id())
+                .collection("Chats")
+                .document(chat.getChat_id())
+                .set(chat)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception exception = task.getException();
+                        assert exception != null;
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("An Error Occurred")
+                                .setMessage(exception.getLocalizedMessage())
+                                .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                .show();
+                        return;
+                    }
+                    gotoMyChats();
+                });
     }
 }

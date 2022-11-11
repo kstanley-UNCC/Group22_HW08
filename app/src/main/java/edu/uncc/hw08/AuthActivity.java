@@ -48,6 +48,8 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
             }
 
             this.firebaseUser = task.getResult().getUser();
+            User user = new User(firebaseUser.getDisplayName(), firebaseUser.getUid());
+            user.setOnlineStatus(true);
 
             gotoMyChats();
         });
@@ -86,6 +88,8 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 }
 
                 this.firebaseUser = user;
+                User newUser = new User(firebaseUser.getDisplayName(), firebaseUser.getUid());
+                newUser.setOnlineStatus(true);
 
                 gotoMyChats();
             });
