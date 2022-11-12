@@ -47,7 +47,7 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 return;
             }
 
-            this.firebaseUser = task.getResult().getUser();
+            firebaseUser = task.getResult().getUser();
             User user = new User(firebaseUser.getDisplayName(), firebaseUser.getUid());
             user.setOnlineStatus(true);
 
