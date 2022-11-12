@@ -5,23 +5,17 @@
 package edu.uncc.hw08;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -85,10 +79,6 @@ public class MyChatsFragment extends Fragment {
                 .document(userId)
                 .collection("Chats")
                 .orderBy("created_at", Query.Direction.DESCENDING);
-
-        FirestoreRecyclerOptions<Chat> options = new FirestoreRecyclerOptions.Builder<Chat>()
-                .setQuery(query, Chat.class)
-                .build();
 
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
         binding.listViewChats.setAdapter(adapter);
