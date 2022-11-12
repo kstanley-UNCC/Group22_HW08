@@ -27,8 +27,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import org.checkerframework.checker.units.qual.C;
-
 import edu.uncc.hw08.databinding.FragmentMyChatsBinding;
 
 public class MyChatsFragment extends Fragment {
@@ -63,7 +61,7 @@ public class MyChatsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMyChatsBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }

@@ -1,5 +1,7 @@
 package edu.uncc.hw08;
 
+import androidx.annotation.NonNull;
+
 import java.util.UUID;
 
 public class User {
@@ -38,6 +40,7 @@ public class User {
         this.onlineStatus = onlineStatus;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

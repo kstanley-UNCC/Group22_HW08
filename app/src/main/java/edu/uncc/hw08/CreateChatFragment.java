@@ -57,7 +57,7 @@ public class CreateChatFragment extends Fragment implements UsersListViewAdapter
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCreateChatBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -94,7 +94,7 @@ public class CreateChatFragment extends Fragment implements UsersListViewAdapter
 
         layoutManager = new LinearLayoutManager(getActivity());
         usersListRecyclerView.setLayoutManager(layoutManager);
-        adapter = new UsersListViewAdapter(getActivity(), firebaseFirestore, this);
+        adapter = new UsersListViewAdapter(requireActivity(), firebaseFirestore, this);
         usersListRecyclerView.setAdapter(adapter);
 
     }

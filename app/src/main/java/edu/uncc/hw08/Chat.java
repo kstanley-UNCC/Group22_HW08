@@ -1,6 +1,8 @@
 package edu.uncc.hw08;
 
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.Timestamp;
 
 import java.util.UUID;
@@ -66,6 +68,7 @@ public class Chat {
         return this;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Chat{" +

@@ -17,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
 import edu.uncc.hw08.databinding.FragmentSignUpBinding;
 
@@ -37,7 +35,7 @@ public class SignUpFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSignUpBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -64,7 +62,7 @@ public class SignUpFragment extends Fragment {
             }
         });
 
-        getActivity().setTitle(R.string.sign_up_label);
+        requireActivity().setTitle(R.string.sign_up_label);
     }
 
     SignUpListener mListener;

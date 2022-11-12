@@ -14,8 +14,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.checkerframework.checker.units.qual.C;
-
 public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener, CreateChatFragment.CreateChatListener {
 
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
