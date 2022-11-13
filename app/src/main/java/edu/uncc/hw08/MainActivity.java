@@ -19,11 +19,14 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = mAuth.getCurrentUser();
+    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        currentUser = getIntent().getParcelableExtra("user");
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.rootView, new MyChatsFragment())

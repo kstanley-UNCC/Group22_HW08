@@ -110,8 +110,13 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 .commit();
     }
 
-    public void gotoMyChats() {
-        Intent intent = new Intent(this, MainActivity.class);
+    public void gotoMyChats(FirebaseUser firebaseUser) {
+        User user = new User(firebaseUser);
+        user.setOnlineStatus(true);
+
+        Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+        intent.putExtra("user", user);
+
         startActivity(intent);
         finish();
     }
