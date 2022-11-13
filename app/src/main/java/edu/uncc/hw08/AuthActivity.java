@@ -4,18 +4,26 @@
 
 package edu.uncc.hw08;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthActivity extends AppCompatActivity implements LoginFragment.LoginListener, SignUpFragment.SignUpListener {
-
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser;
 
@@ -23,14 +31,18 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(mAuth.getCurrentUser() == null){
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
+        if (mAuth.getCurrentUser() == null) {
             setContentView(R.layout.activity_auth);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.rootView, new LoginFragment())
                     .commit();
-        } else {
-            gotoMyChats();
+
+            return;
         }
+
+        gotoMyChats(firebaseUser);
     }
 
     @Override
@@ -47,11 +59,9 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 return;
             }
 
-            this.firebaseUser = task.getResult().getUser();
-            User user = new User(firebaseUser.getDisplayName(), firebaseUser.getUid());
-            user.setOnlineStatus(true);
+            firebaseUser = task.getResult().getUser();
 
-            gotoMyChats();
+            gotoMyChats(firebaseUser);
         });
     }
 
@@ -73,9 +83,11 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                     .setDisplayName(name)
                     .build();
 
-            FirebaseUser user = createTask.getResult().getUser();
-            assert user != null;
-            user.updateProfile(request).addOnCompleteListener(task -> {
+            AuthResult result = createTask.getResult();
+            firebaseUser = result.getUser();
+            assert firebaseUser != null;
+
+            firebaseUser.updateProfile(request).addOnCompleteListener(task -> {
                 if (!task.isSuccessful()) {
                     Exception exception = task.getException();
                     assert exception != null;
@@ -87,11 +99,16 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                     return;
                 }
 
-                this.firebaseUser = user;
-                User newUser = new User(firebaseUser.getDisplayName(), firebaseUser.getUid());
-                newUser.setOnlineStatus(true);
+                Map<String, Object> data = new HashMap<>();
+                data.put("online", true);
+                data.put("displayName", firebaseUser.getDisplayName());
 
-                gotoMyChats();
+                firebaseFirestore
+                        .collection("Users")
+                        .document(firebaseUser.getUid())
+                        .set(data);
+
+                gotoMyChats(firebaseUser);
             });
         });
     }
@@ -110,8 +127,23 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
                 .commit();
     }
 
-    public void gotoMyChats() {
-        Intent intent = new Intent(this, MainActivity.class);
+    public void gotoMyChats(FirebaseUser firebaseUser) {
+        User user = new User(firebaseUser);
+        user.setOnlineStatus(true);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("online", true);
+        data.put("displayName", firebaseUser.getDisplayName());
+
+        // To keep things responsive, we intentionally ignore the response.
+        firebaseFirestore
+                .collection("Users")
+                .document(user.userId())
+                .update(data);
+
+        Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+        intent.putExtra("user", user);
+
         startActivity(intent);
         finish();
     }

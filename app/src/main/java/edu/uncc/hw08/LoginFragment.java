@@ -16,17 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import edu.uncc.hw08.databinding.FragmentLoginBinding;
 
 public class LoginFragment extends Fragment {
 
     FragmentLoginBinding binding;
-
-    public LoginFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +28,7 @@ public class LoginFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -57,7 +51,7 @@ public class LoginFragment extends Fragment {
         });
         binding.buttonCreateNewAccount.setOnClickListener(v -> mListener.gotoSignUp());
 
-        getActivity().setTitle(R.string.login_label);
+        requireActivity().setTitle(R.string.login_label);
     }
 
     LoginListener mListener;

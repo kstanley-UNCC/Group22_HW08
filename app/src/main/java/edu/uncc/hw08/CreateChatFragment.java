@@ -57,7 +57,7 @@ public class CreateChatFragment extends Fragment implements UsersListViewAdapter
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCreateChatBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -65,38 +65,12 @@ public class CreateChatFragment extends Fragment implements UsersListViewAdapter
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView usersListRecyclerView = view.findViewById(R.id.listViewUsers);
-        usersListRecyclerView.setHasFixedSize(true);
-
-
-      //  if (chosenUser == null) {
-            binding.textViewSelectedUser.setText(R.string.no_user_selected);
-     //   } else {
-           // binding.textViewSelectedUser.setText(chosenUser.getUid());
-      //  }
 
         binding.buttonCancel.setOnClickListener(v -> mListener.gotoMyChats());
-
         binding.buttonSubmit.setOnClickListener(v -> {
             String chatText = binding.editTextMessage.getText().toString();
             mListener.createChat(chatText, chosenUser);
         });
-
-        String userId = firebaseUser.getUid();
-
-        Query query = firebaseFirestore
-                .collection("Users")
-                .orderBy(userId);
-
-        FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
-                .setQuery(query, User.class)
-                .build();
-
-        layoutManager = new LinearLayoutManager(getActivity());
-        usersListRecyclerView.setLayoutManager(layoutManager);
-        adapter = new UsersListViewAdapter(getActivity(), firebaseFirestore, this);
-        usersListRecyclerView.setAdapter(adapter);
-
     }
 
     CreateChatListener mListener;

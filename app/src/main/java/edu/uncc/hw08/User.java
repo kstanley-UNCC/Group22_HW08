@@ -1,49 +1,65 @@
 package edu.uncc.hw08;
 
-import java.util.UUID;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class User {
-    public String userName;
-    public String userId = UUID.randomUUID().toString();
-    public boolean onlineStatus;
+import androidx.annotation.NonNull;
 
-    public User() {}
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-    public User(String userName, String userId) {
-        this.userName = userName;
-        this.userId = userId;
+public class User implements Parcelable {
+    private FirebaseUser firebaseUser;
+    private Boolean onlineStatus = false;
+
+    public User(FirebaseUser firebaseUser) {
+        this.firebaseUser = firebaseUser;
     }
 
-    public String getUserName() {
-        return userName;
+    protected User(Parcel in) {
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        onlineStatus = in.readByte() == 1;
     }
 
-    public String getUserId() {
-        return userId;
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    public FirebaseUser getFirebaseUser() {
+        return firebaseUser;
     }
 
-    public boolean isOnlineStatus() {
+    public String userName() {
+        return firebaseUser.getEmail();
+    }
+
+    public String userId() {
+        return firebaseUser.getUid();
+    }
+
+    public Boolean isOnline() {
         return onlineStatus;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setOnlineStatus(boolean onlineStatus) {
+    public void setOnlineStatus(Boolean onlineStatus) {
         this.onlineStatus = onlineStatus;
     }
 
     @Override
-    public String toString() {
-        return "User{" +
-                "userName='" + userName + '\'' +
-                ", userId='" + userId + '\'' +
-                ", onlineStatus=" + onlineStatus +
-                '}';
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeInt(onlineStatus ? 1 : 0);
     }
 }

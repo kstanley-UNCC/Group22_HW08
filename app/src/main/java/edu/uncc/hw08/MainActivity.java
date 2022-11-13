@@ -4,28 +4,29 @@
 
 package edu.uncc.hw08;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.checkerframework.checker.units.qual.C;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener, CreateChatFragment.CreateChatListener {
-
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        currentUser = getIntent().getParcelableExtra("user");
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.rootView, new MyChatsFragment())
@@ -50,7 +51,16 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
 
     @Override
     public void logout() {
-        Intent intent = new Intent(this, AuthActivity.class);
+        Map<String, Object> data = new HashMap<>();
+        data.put("online", false);
+
+        // To keep things responsive, we intentionally ignore the response.
+        firebaseFirestore
+                .collection("Users")
+                .document(currentUser.userId())
+                .update(data);
+
+        Intent intent = new Intent(MainActivity.this, AuthActivity.class);
         startActivity(intent);
         finish();
     }
