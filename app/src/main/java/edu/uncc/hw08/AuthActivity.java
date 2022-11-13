@@ -129,7 +129,6 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void gotoMyChats(FirebaseUser firebaseUser) {
         User user = new User(firebaseUser);
-        user.setOnlineStatus(true);
 
         Map<String, Object> data = new HashMap<>();
         data.put("online", true);
@@ -138,7 +137,7 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.Log
         // To keep things responsive, we intentionally ignore the response.
         firebaseFirestore
                 .collection("Users")
-                .document(user.userId())
+                .document(user.getUserId())
                 .update(data);
 
         Intent intent = new Intent(AuthActivity.this, MainActivity.class);

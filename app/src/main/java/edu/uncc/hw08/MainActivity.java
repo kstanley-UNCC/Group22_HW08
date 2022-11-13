@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
         // To keep things responsive, we intentionally ignore the response.
         firebaseFirestore
                 .collection("Users")
-                .document(currentUser.userId())
+                .document(currentUser.getUserId())
                 .update(data);
 
         Intent intent = new Intent(MainActivity.this, AuthActivity.class);
