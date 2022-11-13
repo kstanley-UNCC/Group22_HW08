@@ -34,10 +34,6 @@ public class MyChatsFragment extends Fragment {
 
     private final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
-    public MyChatsFragment() {
-        // Required empty public constructor
-    }
-
     public static MyChatsFragment newInstance(FirebaseUser firebaseUser) {
         MyChatsFragment fragment = new MyChatsFragment();
         Bundle args = new Bundle();
