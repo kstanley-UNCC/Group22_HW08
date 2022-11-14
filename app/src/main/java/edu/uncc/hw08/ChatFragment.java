@@ -102,7 +102,7 @@ public class ChatFragment extends Fragment {
 
         binding.buttonClose.setOnClickListener(v -> mListener.gotoMyChats());
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerViewMessages.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         Query query = firebaseFirestore
                 .collection("Chats")
@@ -129,7 +129,7 @@ public class ChatFragment extends Fragment {
                 return new MessageHolder(view);
             }
         };
-        binding.recyclerView.setAdapter(adapter);
+        binding.recyclerViewMessages.setAdapter(adapter);
     }
 
     iListener mListener;
