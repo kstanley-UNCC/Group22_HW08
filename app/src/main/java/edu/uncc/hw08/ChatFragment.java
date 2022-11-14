@@ -21,7 +21,6 @@ import edu.uncc.hw08.databinding.FragmentChatBinding;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ChatFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class ChatFragment extends Fragment {
