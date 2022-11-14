@@ -73,6 +73,14 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
 
     @Override
     public void createChat(String chatText, User chosenUser, FirebaseUser currentUser) {
+        Message message = new Message(
+                UUID.randomUUID().toString(),
+                currentUser.getUid(),
+                chosenUser.getUserId(),
+                chatText,
+                Timestamp.now()
+        );
+
         Chat chat = new Chat(
             UUID.randomUUID().toString(),
             currentUser.getUid(),
@@ -80,13 +88,16 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
             chosenUser.getUserId(),
             chosenUser.getDisplayName(),
             "",
-            Timestamp.now()
+            Timestamp.now(),
+            message
         );
 
         firebaseFirestore
                 .collection("Chats")
                 .document(chat.getId())
-                .set(chat)
+                .collection("Messages")
+                .document(message.getId())
+                .set(message)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
                         Exception exception = task.getException();
