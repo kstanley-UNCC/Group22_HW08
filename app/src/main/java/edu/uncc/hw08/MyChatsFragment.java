@@ -78,17 +78,17 @@ public class MyChatsFragment extends Fragment {
                         return;
                     }
 
-                    for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                        chats.put(doc.getId(), new Chat(
-                                doc.getId(),
-                                doc.get("owner", String.class),
-                                doc.get("ownerName", String.class),
-                                doc.get("receiver", String.class),
-                                doc.get("receiverName", String.class),
-                                doc.get("lastMessage", String.class),
-                                doc.get("lastSent", Timestamp.class)
-                        ));
-                    }
+//                    for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+//                        chats.put(doc.getId(), new Chat(
+//                                doc.getId(),
+//                                doc.get("owner", String.class),
+//                                doc.get("ownerName", String.class),
+//                                doc.get("receiver", String.class),
+//                                doc.get("receiverName", String.class),
+//                                doc.get("lastMessage", String.class),
+//                                doc.get("lastSent", Timestamp.class)
+//                        ));
+//                    }
 
                     // Next we get all chats where we are the receiver
                     firebaseFirestore
