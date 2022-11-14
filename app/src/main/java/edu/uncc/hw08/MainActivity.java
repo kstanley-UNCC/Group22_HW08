@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
                             return;
                         }
 
-                        goToChat(chat);
+                        gotoMyChats();
                     });
             });
     }
