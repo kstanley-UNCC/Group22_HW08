@@ -4,18 +4,19 @@
 
 package edu.uncc.hw08;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener, CreateChatFragment.CreateChatListener {
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
@@ -35,10 +36,10 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
 
     @Override
     public void goToChat(Chat chat) {
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.rootView, ChatFragment.newInstance(chat))
-//                .addToBackStack(null)
-//                .commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, new ChatFragment(chat))
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
         // To keep things responsive, we intentionally ignore the response.
         firebaseFirestore
                 .collection("Users")
-                .document(currentUser.userId())
+                .document(currentUser.getUserId())
                 .update(data);
 
         Intent intent = new Intent(MainActivity.this, AuthActivity.class);
@@ -72,13 +73,19 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
 
     @Override
     public void createChat(String chatText, FirebaseUser chosenUser) {
-        Chat chat = new Chat();
+        Chat chat = new Chat(
+            UUID.randomUUID().toString(),
+            currentUser.getUserId(),
+            currentUser.getDisplayName(),
+            chosenUser.getUid(),
+            chosenUser.getDisplayName(),
+            "",
+            Timestamp.now()
+        );
 
         firebaseFirestore
-                .collection("Users")
-                .document(chat.getUser_id())
                 .collection("Chats")
-                .document(chat.getChat_id())
+                .document(chat.getId())
                 .set(chat)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {

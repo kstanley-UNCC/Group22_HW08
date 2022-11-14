@@ -1,82 +1,114 @@
 package edu.uncc.hw08;
 
 
-import androidx.annotation.NonNull;
-
 import com.google.firebase.Timestamp;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Chat {
-    public String chat_id = UUID.randomUUID().toString();
-    public String user_name;
-    public String user_id;
-    public String chatText;
-    public Timestamp created_at;
+    public String id;
+    public String owner;
+    public String ownerName;
+    public String receiver;
+    public String receiverName;
+    public String lastMessage;
+    public Timestamp lastSent;
+    public List<Message> messages;
 
-    public Chat(){}
+    public Chat() {}
 
-    public Chat(String user_name, String user_id, String chatText) {
-        this.user_name = user_name;
-        this.user_id = user_id;
-        this.chatText = chatText;
-        this.created_at = Timestamp.now();
+    public Chat(String id, String owner, String ownerName, String receiver, String receiverName, String lastMessage, Timestamp lastSent) {
+        this.id = id;
+        this.owner = owner;
+        this.ownerName = ownerName;
+        this.receiver = receiver;
+        this.receiverName = receiverName;
+        this.lastMessage = lastMessage;
+        this.lastSent = lastSent;
+        this.messages = new ArrayList<>();
     }
 
-    public String getChat_id() {
-        return chat_id;
+    public Chat(String id, String owner, String ownerName, String receiver, String receiverName, String lastMessage, Timestamp lastSent, List<Message> messages) {
+        this.id = id;
+        this.owner = owner;
+        this.ownerName = ownerName;
+        this.receiver = receiver;
+        this.receiverName = receiverName;
+        this.lastMessage = lastMessage;
+        this.lastSent = lastSent;
+        this.messages = messages;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getId() {
+        return id;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public String getOwner() {
+        return owner;
     }
 
-    public String getChatText() {
-        return chatText;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public Timestamp getCreated_at() {
-        return created_at;
+    public String getReceiver() {
+        return receiver;
     }
 
-    public Chat setChat_id(String chat_id) {
-        this.chat_id = chat_id;
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public String getLastSent() {
+        return lastSent.toDate().toString();
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public Chat setId(String id) {
+        this.id = id;
         return this;
     }
 
-    public Chat setUser_name(String user_name) {
-        this.user_name = user_name;
+    public Chat setOwner(String owner) {
+        this.owner = owner;
         return this;
     }
 
-    public Chat setUser_id(String user_id) {
-        this.user_id = user_id;
+    public Chat setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
         return this;
     }
 
-    public Chat setChatText(String chatText) {
-        this.chatText = chatText;
+    public Chat setReceiver(String receiver) {
+        this.receiver = receiver;
         return this;
     }
 
-    public Chat setCreated_at(Timestamp created_at) {
-        this.created_at = created_at;
+    public Chat setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
         return this;
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "Chat{" +
-                "chat_id='" + chat_id + '\'' +
-                ", user_name='" + user_name + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", chatText='" + chatText + '\'' +
-                ", created_at=" + created_at +
-                '}';
+    public Chat setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+        return this;
+    }
+
+    public Chat setLastSent(Timestamp lastSent) {
+        this.lastSent = lastSent;
+        return this;
+    }
+
+    public Chat setMessages(List<Message> messages) {
+        this.messages = messages;
+        return this;
     }
 }
