@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -169,14 +168,20 @@ public class ChatFragment extends Fragment {
 
         public void setId(String id) {
             ImageView imageViewDelete = view.findViewById(R.id.imageViewDelete);
-            imageViewDelete.setOnClickListener(view -> firebaseFirestore
-                    .collection("Chats")
-                    .document(chat.getId())
-                    .collection("Messages")
-                    .document(id)
-                    .delete()
-                    .addOnSuccessListener(unused -> Log.d("demo", "Message successfully deleted"))
-                    .addOnFailureListener(e -> Log.w("demo", "Error deleting message", e)));
+            imageViewDelete.setOnClickListener(view -> new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Message")
+                    .setMessage("Deleting this message cannot be undone. Are you sure?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> firebaseFirestore
+                            .collection("Chats")
+                            .document(chat.getId())
+                            .collection("Messages")
+                            .document(id)
+                            .delete()
+                            .addOnSuccessListener(unused -> Log.d("demo", "Message successfully deleted"))
+                            .addOnFailureListener(e -> Log.w("demo", "Error deleting message", e)))
+                    .setNegativeButton(android.R.string.no, null)
+                    .show());
         }
     }
 }
