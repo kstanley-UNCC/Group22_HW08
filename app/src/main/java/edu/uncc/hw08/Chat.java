@@ -6,9 +6,6 @@ package edu.uncc.hw08;
 
 import com.google.firebase.Timestamp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Chat implements Comparable {
     public String id;
     public String owner;
@@ -17,7 +14,6 @@ public class Chat implements Comparable {
     public String receiverName;
     public String lastMessage;
     public Timestamp lastSent;
-    public Message message;
 
     public Chat() {}
 
@@ -29,18 +25,6 @@ public class Chat implements Comparable {
         this.receiverName = receiverName;
         this.lastMessage = lastMessage;
         this.lastSent = lastSent;
-        this.messages = new ArrayList<>();
-    }
-
-    public Chat(String id, String owner, String ownerName, String receiver, String receiverName, String lastMessage, Timestamp lastSent, Message message) {
-        this.id = id;
-        this.owner = owner;
-        this.ownerName = ownerName;
-        this.receiver = receiver;
-        this.receiverName = receiverName;
-        this.lastMessage = lastMessage;
-        this.lastSent = lastSent;
-        this.message = message;
     }
 
     public String getId() {
@@ -69,10 +53,6 @@ public class Chat implements Comparable {
 
     public String getLastSent() {
         return lastSent.toDate().toString();
-    }
-
-    public List<Message> getMessages() {
-        return messages;
     }
 
     public Chat setId(String id) {
@@ -107,11 +87,6 @@ public class Chat implements Comparable {
 
     public Chat setLastSent(Timestamp lastSent) {
         this.lastSent = lastSent;
-        return this;
-    }
-
-    public Chat setMessages(List<Message> messages) {
-        this.messages = messages;
         return this;
     }
 
