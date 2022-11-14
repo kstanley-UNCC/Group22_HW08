@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,10 +118,12 @@ public class MyChatsFragment extends Fragment {
                                     ));
                                 }
 
+                                List<Chat> c = new ArrayList<>(chats.values());
+                                Collections.sort(c);
                                 binding.listViewChats.setAdapter(new ChatAdapter(
                                         requireContext(),
                                         R.layout.my_chats_list_item,
-                                        new ArrayList<>(chats.values())
+                                        c
                                 ));
                             });
                 });
