@@ -49,13 +49,9 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (chat.getReceiver() != null) {
-            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-            assert firebaseUser != null;
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        assert firebaseUser != null;
 
-            requireActivity().setTitle(getString(R.string.chat_label, firebaseUser.getUid().equals(chat.getOwner()) ? chat.getReceiverName() : chat.getOwnerName()));
-        } else {
-            requireActivity().setTitle(R.string.new_chat_label);
-        }
+        requireActivity().setTitle(getString(R.string.chat_label, firebaseUser.getUid().equals(chat.getOwner()) ? chat.getReceiverName() : chat.getOwnerName()));
     }
 }
