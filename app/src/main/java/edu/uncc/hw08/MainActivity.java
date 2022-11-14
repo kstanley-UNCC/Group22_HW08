@@ -75,6 +75,40 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
     }
 
     @Override
+    public void addMessage(String chatText, Chat chat, FirebaseUser firebaseUser) {
+        Message message = new Message(
+                UUID.randomUUID().toString(),
+                firebaseUser.getDisplayName(),
+                chatText,
+                Timestamp.now()
+        );
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", message.getId());
+        data.put("from", message.getFrom());
+        data.put("sent", message.sent);
+        data.put("message", message.getMessage());
+
+        firebaseFirestore
+                .collection("Chats")
+                .document(chat.id)
+                .collection("Messages")
+                .add(data)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception exception = task.getException();
+                        assert exception != null;
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("An Error Occurred")
+                                .setMessage(exception.getLocalizedMessage())
+                                .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                .show();
+                        return;
+                    }
+                });
+    }
+
+    @Override
     public void createChat(String chatText, User chosenUser, FirebaseUser currentUser) {
         Message message = new Message(
             UUID.randomUUID().toString(),

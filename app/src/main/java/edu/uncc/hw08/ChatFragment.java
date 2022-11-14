@@ -130,6 +130,11 @@ public class ChatFragment extends Fragment {
             }
         };
         binding.recyclerViewMessages.setAdapter(adapter);
+
+        binding.buttonSubmit.setOnClickListener(v -> {
+            String chatMessage = binding.editTextMessage.getText().toString();
+            mListener.addMessage(chatMessage, chat, firebaseUser);
+        });
     }
 
     iListener mListener;
@@ -142,6 +147,7 @@ public class ChatFragment extends Fragment {
 
     public interface iListener {
         void gotoMyChats();
+        void addMessage(String chatText, Chat chat, FirebaseUser firebaseUser);
     }
 
     private class MessageHolder extends RecyclerView.ViewHolder {
