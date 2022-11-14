@@ -12,6 +12,8 @@ public class Message {
     public String message;
     public Timestamp sent;
 
+    public Message() {}
+
     public Message(String id, String from, String message, Timestamp sent) {
         this.id = id;
         this.from = from;
