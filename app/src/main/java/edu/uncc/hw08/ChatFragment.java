@@ -53,5 +53,19 @@ public class ChatFragment extends Fragment {
         assert firebaseUser != null;
 
         requireActivity().setTitle(getString(R.string.chat_label, firebaseUser.getUid().equals(chat.getOwner()) ? chat.getReceiverName() : chat.getOwnerName()));
+
+        binding.buttonClose.setOnClickListener(v -> mListener.gotoMyChats());
+    }
+
+    iListener mListener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mListener = (iListener) context;
+    }
+
+    public interface iListener {
+        void gotoMyChats();
     }
 }
