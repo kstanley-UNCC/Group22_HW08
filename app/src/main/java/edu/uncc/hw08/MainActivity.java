@@ -4,12 +4,15 @@
 
 package edu.uncc.hw08;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -18,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener, CreateChatFragment.CreateChatListener {
+public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener, CreateChatFragment.CreateChatListener, ChatFragment.iListener {
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     User currentUser;
 
@@ -74,10 +77,10 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
     @Override
     public void createChat(String chatText, User chosenUser, FirebaseUser currentUser) {
         Message message = new Message(
-                UUID.randomUUID().toString(),
-                currentUser.getDisplayName(),
-                chatText,
-                Timestamp.now()
+            UUID.randomUUID().toString(),
+            currentUser.getDisplayName(),
+            chatText,
+            Timestamp.now()
         );
 
         Chat chat = new Chat(
@@ -87,28 +90,62 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
             chosenUser.getUserId(),
             chosenUser.getDisplayName(),
             "",
-            Timestamp.now(),
-            message
+            Timestamp.now()
         );
 
+        // Create the chat document first
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", chat.getId());
+        data.put("owner", chat.getOwner());
+        data.put("ownerName", chat.getOwnerName());
+        data.put("receiver", chat.getReceiver());
+        data.put("receiverName", chat.getReceiverName());
+        data.put("lastMessage", chat.getLastMessage());
+        data.put("lastSent", chat.lastSent);
+
         firebaseFirestore
-                .collection("Chats")
-                .document(chat.getId())
-                .collection("Messages")
-                .document(message.getId())
-                .set(message)
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Exception exception = task.getException();
-                        assert exception != null;
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("An Error Occurred")
-                                .setMessage(exception.getLocalizedMessage())
-                                .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
-                                .show();
-                        return;
-                    }
-                    gotoMyChats();
-                });
+            .collection("Chats")
+            .document(chat.getId())
+            .set(data)
+            .addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    Exception exception = task.getException();
+                    assert exception != null;
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("An Error Occurred")
+                            .setMessage(exception.getLocalizedMessage())
+                            .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                            .show();
+                    return;
+                }
+
+                // Step 2 is to create/update the messages collection
+                data.clear();
+                data.put("id", message.getId());
+                data.put("from", message.getFrom());
+                data.put("sent", message.sent);
+                data.put("message", message.getMessage());
+
+                firebaseFirestore
+                    .collection("Chats")
+                    .document(chat.getId())
+                    .collection("Messages")
+                    .document(message.getId())
+                    .set(data)
+                    .addOnCompleteListener(task1 -> {
+                        if (!task1.isSuccessful()) {
+                            Exception exception = task.getException();
+                            assert exception != null;
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("An Error Occurred")
+                                    .setMessage(exception.getLocalizedMessage())
+                                    .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                    .show();
+                            return;
+                        }
+
+                        goToChat(chat);
+                    });
+            });
     }
 }

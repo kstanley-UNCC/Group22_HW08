@@ -6,7 +6,7 @@ package edu.uncc.hw08;
 
 import com.google.firebase.Timestamp;
 
-public class Chat {
+public class Chat implements Comparable {
     public String id;
     public String owner;
     public String ownerName;
@@ -14,7 +14,6 @@ public class Chat {
     public String receiverName;
     public String lastMessage;
     public Timestamp lastSent;
-    public Message message;
 
     public Chat() {}
 
@@ -26,17 +25,6 @@ public class Chat {
         this.receiverName = receiverName;
         this.lastMessage = lastMessage;
         this.lastSent = lastSent;
-    }
-
-    public Chat(String id, String owner, String ownerName, String receiver, String receiverName, String lastMessage, Timestamp lastSent, Message message) {
-        this.id = id;
-        this.owner = owner;
-        this.ownerName = ownerName;
-        this.receiver = receiver;
-        this.receiverName = receiverName;
-        this.lastMessage = lastMessage;
-        this.lastSent = lastSent;
-        this.message = message;
     }
 
     public String getId() {
@@ -100,5 +88,10 @@ public class Chat {
     public Chat setLastSent(Timestamp lastSent) {
         this.lastSent = lastSent;
         return this;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return ((Chat)o).lastSent.compareTo(lastSent);
     }
 }

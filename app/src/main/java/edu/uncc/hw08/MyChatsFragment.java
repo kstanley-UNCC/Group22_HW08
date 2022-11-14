@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,68 +66,71 @@ public class MyChatsFragment extends Fragment {
         firebaseFirestore
                 .collection("Chats")
                 .whereEqualTo("owner", userId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Exception exception = task.getException();
-                        assert exception != null;
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
                         new AlertDialog.Builder(requireContext())
                                 .setTitle("An Error Occurred")
-                                .setMessage(exception.getLocalizedMessage())
+                                .setMessage(error.getLocalizedMessage())
                                 .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
                                 .show();
                         return;
                     }
+                    assert value != null;
 
-//                    for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-//                        chats.put(doc.getId(), new Chat(
-//                                doc.getId(),
-//                                doc.get("owner", String.class),
-//                                doc.get("ownerName", String.class),
-//                                doc.get("receiver", String.class),
-//                                doc.get("receiverName", String.class),
-//                                doc.get("lastMessage", String.class),
-//                                doc.get("lastSent", Timestamp.class)
-//                        ));
-//                    }
+                    for (DocumentSnapshot doc : value.getDocuments()) {
+                        chats.put(doc.getId(), new Chat(
+                            doc.getId(),
+                            doc.get("owner", String.class),
+                            doc.get("ownerName", String.class),
+                            doc.get("receiver", String.class),
+                            doc.get("receiverName", String.class),
+                            doc.get("lastMessage", String.class),
+                            doc.get("lastSent", Timestamp.class)
+                        ));
+                    }
 
                     // Next we get all chats where we are the receiver
                     firebaseFirestore
-                            .collection("Chats")
-                            .whereEqualTo("receiver", userId)
-                            .addSnapshotListener((value, error) -> {
-                                if (error != null) {
-                                    new AlertDialog.Builder(requireContext())
-                                            .setTitle("An Error Occurred")
-                                            .setMessage(error.getLocalizedMessage())
-                                            .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
-                                            .show();
-                                    return;
-                                }
+                        .collection("Chats")
+                        .whereEqualTo("receiver", userId)
+                        .addSnapshotListener((value1, error1) -> {
+                            if (error1 != null) {
+                                new AlertDialog.Builder(requireContext())
+                                        .setTitle("An Error Occurred")
+                                        .setMessage(error1.getLocalizedMessage())
+                                        .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                        .show();
+                                return;
+                            }
 
-                                assert value != null;
-                                for (DocumentSnapshot doc : value.getDocuments()) {
-                                    chats.put(doc.getId(), new Chat(
-                                        doc.getId(),
-                                        doc.get("owner", String.class),
-                                        doc.get("ownerName", String.class),
-                                        doc.get("receiver", String.class),
-                                        doc.get("receiverName", String.class),
-                                        doc.get("lastMessage", String.class),
-                                        doc.get("lastSent", Timestamp.class)
-                                    ));
-                                }
-
-                                binding.listViewChats.setAdapter(new ChatAdapter(
-                                        requireContext(),
-                                        R.layout.my_chats_list_item,
-                                        new ArrayList<>(chats.values())
+                            assert value1 != null;
+                            for (DocumentSnapshot doc : value1.getDocuments()) {
+                                chats.put(doc.getId(), new Chat(
+                                    doc.getId(),
+                                    doc.get("owner", String.class),
+                                    doc.get("ownerName", String.class),
+                                    doc.get("receiver", String.class),
+                                    doc.get("receiverName", String.class),
+                                    doc.get("lastMessage", String.class),
+                                    doc.get("lastSent", Timestamp.class)
                                 ));
-                            });
+                            }
+
+                            List<Chat> c = new ArrayList<>(chats.values());
+                            Collections.sort(c);
+
+                            binding.listViewChats.setAdapter(new ChatAdapter(
+                                    requireContext(),
+                                    R.layout.my_chats_list_item,
+                                    c
+                            ));
+                        });
                 });
 
         binding.listViewChats.setOnItemClickListener((adapterView, view1, position, l) -> {
-            ArrayList<Chat> c = new ArrayList<>(chats.values());
+            List<Chat> c = new ArrayList<>(chats.values());
+            Collections.sort(c);
+
             mListener.goToChat(c.get(position));
         });
 
