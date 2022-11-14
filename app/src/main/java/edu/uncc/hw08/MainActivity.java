@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
     }
 
     @Override
-    public void goCreateChat(FirebaseUser firebaseUser) {
+    public void goCreateChat() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, CreateChatFragment.newInstance(firebaseUser))
+                .replace(R.id.rootView, new CreateChatFragment())
                 .addToBackStack(null)
                 .commit();
     }
@@ -72,21 +72,31 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
     }
 
     @Override
-    public void createChat(String chatText, FirebaseUser chosenUser) {
+    public void createChat(String chatText, User chosenUser, FirebaseUser currentUser) {
+        Message message = new Message(
+                UUID.randomUUID().toString(),
+                currentUser.getDisplayName(),
+                chatText,
+                Timestamp.now()
+        );
+
         Chat chat = new Chat(
             UUID.randomUUID().toString(),
-            currentUser.getUserId(),
+            currentUser.getUid(),
             currentUser.getDisplayName(),
-            chosenUser.getUid(),
+            chosenUser.getUserId(),
             chosenUser.getDisplayName(),
             "",
-            Timestamp.now()
+            Timestamp.now(),
+            message
         );
 
         firebaseFirestore
                 .collection("Chats")
                 .document(chat.getId())
-                .set(chat)
+                .collection("Messages")
+                .document(message.getId())
+                .set(message)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
                         Exception exception = task.getException();
