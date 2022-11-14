@@ -1,3 +1,7 @@
+// Homework Assignment 08
+// Group22_HW08
+// Stephanie Lee Karp & Ken Stanley
+
 package edu.uncc.hw08;
 
 import com.google.firebase.auth.FirebaseUser;
