@@ -54,10 +54,10 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
 
     @Override
     public void goToChat(Chat chat) {
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.rootView, ChatFragment.newInstance(chat))
-//                .addToBackStack(null)
-//                .commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, new ChatFragment(chat))
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
