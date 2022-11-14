@@ -9,14 +9,12 @@ import com.google.firebase.Timestamp;
 public class Message {
     public String id;
     public String from;
-    public String to;
     public String message;
     public Timestamp sent;
 
-    public Message(String id, String from, String to, String message, Timestamp sent) {
+    public Message(String id, String from, String message, Timestamp sent) {
         this.id = id;
         this.from = from;
-        this.to = to;
         this.message = message;
         this.sent = sent;
     }
@@ -27,10 +25,6 @@ public class Message {
 
     public String getFrom() {
         return from;
-    }
-
-    public String getTo() {
-        return to;
     }
 
     public String getMessage() {
@@ -47,10 +41,6 @@ public class Message {
 
     public void setFrom(String from) {
         this.from = from;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
     }
 
     public void setMessage(String message) {

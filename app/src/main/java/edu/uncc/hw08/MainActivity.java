@@ -75,8 +75,7 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
     public void createChat(String chatText, User chosenUser, FirebaseUser currentUser) {
         Message message = new Message(
                 UUID.randomUUID().toString(),
-                currentUser.getUid(),
-                chosenUser.getUserId(),
+                chosenUser.getDisplayName(),
                 chatText,
                 Timestamp.now()
         );

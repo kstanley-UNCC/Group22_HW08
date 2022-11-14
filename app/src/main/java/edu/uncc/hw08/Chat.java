@@ -101,6 +101,4 @@ public class Chat {
         this.lastSent = lastSent;
         return this;
     }
-
-
 }
