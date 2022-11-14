@@ -4,29 +4,23 @@
 
 package edu.uncc.hw08;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements MyChatsFragment.MyChatsFragmentListener, CreateChatFragment.CreateChatListener {
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     User currentUser;
-
-    Map<String, User> userMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,18 +28,6 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
         setContentView(R.layout.activity_main);
 
         currentUser = getIntent().getParcelableExtra("user");
-
-        // Create a listener that will keep track of all the users for the app
-        firebaseFirestore
-                .collection("Users")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        for (DocumentSnapshot doc : value.getDocuments()) {
-                            userMap.put(doc.getId(), new User(doc.getId(), (String) doc.get("displayName"), (Boolean) doc.get("online")));
-                        }
-                    }
-                });
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.rootView, new MyChatsFragment())
@@ -91,13 +73,19 @@ public class MainActivity extends AppCompatActivity implements MyChatsFragment.M
 
     @Override
     public void createChat(String chatText, FirebaseUser chosenUser) {
-        Chat chat = new Chat();
+        Chat chat = new Chat(
+            UUID.randomUUID().toString(),
+            currentUser.getUserId(),
+            currentUser.getDisplayName(),
+            chosenUser.getUid(),
+            chosenUser.getDisplayName(),
+            "",
+            Timestamp.now()
+        );
 
         firebaseFirestore
-                .collection("Users")
-                .document(chat.getUser_id())
                 .collection("Chats")
-                .document(chat.getChat_id())
+                .document(chat.getId())
                 .set(chat)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
