@@ -9,52 +9,36 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import edu.uncc.hw08.databinding.FragmentCreateChatBinding;
 
-public class CreateChatFragment extends Fragment implements UsersListViewAdapter.UsersListener {
+public class CreateChatFragment extends Fragment {
 
     FragmentCreateChatBinding binding;
-    UsersListViewAdapter adapter;
-    LinearLayoutManager layoutManager;
-    FirebaseUser chosenUser;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+    User chosenUser;
 
-    private static final String ARG_USER = "user";
-
-    private FirebaseUser firebaseUser;
     private final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-
-    public CreateChatFragment() {
-        // Required empty public constructor
-    }
-
-    public static CreateChatFragment newInstance(FirebaseUser firebaseUser) {
-        CreateChatFragment fragment = new CreateChatFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_USER, firebaseUser);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            firebaseUser = getArguments().getParcelable(ARG_USER);
-        }
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,9 +51,49 @@ public class CreateChatFragment extends Fragment implements UsersListViewAdapter
         super.onViewCreated(view, savedInstanceState);
 
         binding.buttonCancel.setOnClickListener(v -> mListener.gotoMyChats());
-        binding.buttonSubmit.setOnClickListener(v -> {
-            String chatText = binding.editTextMessage.getText().toString();
-            mListener.createChat(chatText, chosenUser);
+
+        Map<String, User> users = new HashMap<>();
+
+        firebaseFirestore
+                .collection("Users")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception exception = task.getException();
+                        assert exception != null;
+                        new AlertDialog.Builder(requireContext())
+                                .setTitle("An Error Occurred")
+                                .setMessage(exception.getLocalizedMessage())
+                                .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                .show();
+                        return;
+                    }
+
+                    for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                        users.put(doc.getId(), new User(
+                                doc.getId(),
+                                doc.get("displayName", String.class),
+                                doc.get("online", Boolean.class)
+                        ));
+                    }
+
+                    binding.listViewUsers.setAdapter(new UserAdapter(
+                            requireContext(),
+                            R.layout.users_row_item,
+                            new ArrayList<>(users.values())
+                    ));
+                });
+
+        binding.listViewUsers.setOnItemClickListener((adapterView, view1, position, l) -> {
+            ArrayList<User> u = new ArrayList<>(users.values());
+            chosenUser = u.get(position);
+
+            binding.textViewSelectedUser.setText(chosenUser.getDisplayName());
+
+            binding.buttonSubmit.setOnClickListener(v -> {
+                String chatText = binding.editTextMessage.getText().toString();
+                mListener.createChat(chatText, chosenUser, firebaseUser);
+            });
         });
     }
 
@@ -81,13 +105,38 @@ public class CreateChatFragment extends Fragment implements UsersListViewAdapter
         mListener = (CreateChatListener) context;
     }
 
-    @Override
-    public void userClicked(FirebaseUser firebaseUser) {
-        chosenUser = firebaseUser;
-    }
-
     interface CreateChatListener {
         void gotoMyChats();
-        void createChat(String chatText, FirebaseUser chosenUser);
+        void createChat(String chatText, User chosenUser, FirebaseUser firebaseUser);
+    }
+
+    public class UserAdapter extends ArrayAdapter<User> {
+
+        public UserAdapter(@NonNull Context context, int resource, @NonNull List<User> objects) {
+            super(context, resource, objects);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.users_row_item, parent, false);
+            }
+
+            User user = getItem(position);
+
+            TextView textViewName = convertView.findViewById(R.id.textViewName);
+            ImageView imageViewOnline = convertView.findViewById(R.id.imageViewOnline);
+
+            textViewName.setText(user.getDisplayName());
+
+            if (user.isOnline()) {
+                imageViewOnline.setVisibility(View.VISIBLE);
+            } else {
+                imageViewOnline.setVisibility(View.INVISIBLE);
+            }
+
+            return convertView;
+        }
     }
 }

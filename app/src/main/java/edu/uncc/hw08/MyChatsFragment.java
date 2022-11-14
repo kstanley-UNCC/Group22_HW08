@@ -55,7 +55,7 @@ public class MyChatsFragment extends Fragment {
             mListener.logout();
         });
 
-        binding.buttonNewChat.setOnClickListener(v -> mListener.goCreateChat(firebaseUser));
+        binding.buttonNewChat.setOnClickListener(v -> mListener.goCreateChat());
 
         String userId = firebaseUser.getUid();
 
@@ -144,7 +144,7 @@ public class MyChatsFragment extends Fragment {
     interface MyChatsFragmentListener {
         void goToChat(Chat chat);
 
-        void goCreateChat(FirebaseUser firebaseUser);
+        void goCreateChat();
 
         void logout();
     }
