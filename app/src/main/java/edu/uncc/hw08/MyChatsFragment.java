@@ -118,6 +118,7 @@ public class MyChatsFragment extends Fragment {
 
                             List<Chat> c = new ArrayList<>(chats.values());
                             Collections.sort(c);
+
                             binding.listViewChats.setAdapter(new ChatAdapter(
                                     requireContext(),
                                     R.layout.my_chats_list_item,
@@ -127,7 +128,9 @@ public class MyChatsFragment extends Fragment {
                 });
 
         binding.listViewChats.setOnItemClickListener((adapterView, view1, position, l) -> {
-            ArrayList<Chat> c = new ArrayList<>(chats.values());
+            List<Chat> c = new ArrayList<>(chats.values());
+            Collections.sort(c);
+
             mListener.goToChat(c.get(position));
         });
 
